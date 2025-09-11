@@ -24,7 +24,8 @@ Once enabled, *sphinx-click* enables automatic documentation for
 
    The directive takes the import name of a *click* object as its sole
    argument. This should be a subclass of |click.core.BaseCommand|_, such as
-   ``click.Command``, ``click.Group``, ``click.MultiCommand``, etc.
+   ``click.Command``, ``click.Group``, ``click.MultiCommand`` (deprecated),
+   etc.
 
    In addition, the following options are required:
 
