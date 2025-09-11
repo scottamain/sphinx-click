@@ -1,5 +1,4 @@
 Changes
 =======
 
-.. include:: ../ChangeLog
-   :start-line: 2
+.. release-notes::
