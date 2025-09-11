@@ -10,7 +10,7 @@ authors = [
 ]
 readme = {file = "README.rst", content-type = "text/x-rst"}
 license = {text = "MIT License"}
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["sphinx", "click"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
