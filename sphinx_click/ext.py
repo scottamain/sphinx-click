@@ -344,6 +344,7 @@ def _format_command(
     ctx: click.Context,
     nested: NestedT,
     commands: ty.Optional[ty.List[str]] = None,
+    hide_description: bool = False,
 ) -> ty.Generator[str, None, None]:
     """Format the output of `click.Command`."""
     if ctx.command.hidden:
@@ -351,8 +352,9 @@ def _format_command(
 
     # description
 
-    for line in _format_description(ctx):
-        yield line
+    if not hide_description:
+        for line in _format_description(ctx):
+            yield line
 
     yield '.. program:: {}'.format(ctx.command_path)
 
@@ -443,6 +445,7 @@ class ClickDirective(rst.Directive):
         'nested': nested,
         'commands': directives.unchanged,
         'show-nested': directives.flag,
+        'hide-description': directives.flag,
     }
 
     def _load_module(self, module_path: str) -> ty.Union[click.Command, click.Group]:
@@ -491,6 +494,7 @@ class ClickDirective(rst.Directive):
         nested: NestedT,
         commands: ty.Optional[ty.List[str]] = None,
         semantic_group: bool = False,
+        hide_description: bool = False,
     ) -> ty.List[nodes.section]:
         """Generate the relevant Sphinx nodes.
 
@@ -504,6 +508,7 @@ class ClickDirective(rst.Directive):
             empty
         :param semantic_group: Display command as title and description for
             `click.CommandCollection`.
+        :param hide_description: Hide the command description if True.
         :returns: A list of nested docutil nodes
         """
         ctx = click.Context(command, info_name=name, parent=parent)
@@ -528,7 +533,7 @@ class ClickDirective(rst.Directive):
         if semantic_group:
             lines = _format_description(ctx)
         else:
-            lines = _format_command(ctx, nested, commands)
+            lines = _format_command(ctx, nested, commands, hide_description)
 
         for line in lines:
             LOG.debug(line)
@@ -548,6 +553,7 @@ class ClickDirective(rst.Directive):
                             parent=ctx,
                             nested=nested,
                             semantic_group=True,
+                            hide_description=hide_description,
                         )
                     )
             else:
@@ -556,7 +562,11 @@ class ClickDirective(rst.Directive):
                     parent = ctx if not semantic_group else ctx.parent
                     section.extend(
                         self._generate_nodes(
-                            command.name, command, parent=parent, nested=nested
+                            command.name,
+                            command,
+                            parent=parent,
+                            nested=nested,
+                            hide_description=hide_description,
                         )
                     )
 
@@ -592,7 +602,9 @@ class ClickDirective(rst.Directive):
                 command.strip() for command in self.options['commands'].split(',')
             ]
 
-        return self._generate_nodes(prog_name, command, None, nested, commands)
+        hide_description = 'hide-description' in self.options
+
+        return self._generate_nodes(prog_name, command, None, nested, commands, hide_description=hide_description)
 
 
 def setup(app: application.Sphinx) -> ty.Dict[str, ty.Any]:

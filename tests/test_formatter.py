@@ -354,6 +354,44 @@ class CommandTestCase(unittest.TestCase):
 
         self.assertEqual('', '\n'.join(output))
 
+    def test_hide_description(self):
+        """Validate that hide_description flag hides the command description."""
+
+        @click.command()
+        @click.option('--param', help='A sample option')
+        def foobar():
+            """A sample command with a description."""
+            pass
+
+        ctx = click.Context(foobar, info_name='foobar')
+        output = list(ext._format_command(ctx, nested='short', hide_description=True))
+
+        # The output should NOT contain the description
+        self.assertEqual(
+            textwrap.dedent(
+                """
+        .. program:: foobar
+        .. rubric:: Usage
+
+        .. code-block:: shell
+
+            foobar [OPTIONS]
+
+        .. rubric:: Options
+
+        .. option:: --param <param>
+
+            A sample option
+        """
+            ).lstrip(),
+            '\n'.join(output),
+        )
+
+        # Verify that without the flag, the description IS present
+        output_with_desc = list(ext._format_command(ctx, nested='short', hide_description=False))
+        output_str = '\n'.join(output_with_desc)
+        self.assertIn('A sample command with a description.', output_str)
+
     def test_titles(self):
         """Validate a `click.Command` with nested titles."""
 
