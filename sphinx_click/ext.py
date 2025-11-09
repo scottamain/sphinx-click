@@ -372,7 +372,7 @@ def _format_command(
 
     lines = list(_format_options(ctx))
     if lines:
-        yield '.. rubric:: Optionz'
+        yield '.. rubric:: Options'
         yield ''
 
     for line in lines:
