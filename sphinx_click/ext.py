@@ -372,9 +372,7 @@ def _format_command(
 
     lines = list(_format_options(ctx))
     if lines:
-        # we use rubric to provide some separation without exploding the table
-        # of contents
-        yield '.. rubric:: Options'
+        yield '.. rubric:: Optionz'
         yield ''
 
     for line in lines:
