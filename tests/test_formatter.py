@@ -31,6 +31,8 @@ class CommandTestCase(unittest.TestCase):
         A sample command.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS]
@@ -79,6 +81,8 @@ class CommandTestCase(unittest.TestCase):
         A sample command.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS] ARG
@@ -152,6 +156,8 @@ class CommandTestCase(unittest.TestCase):
         A sample command.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS]
@@ -197,6 +203,8 @@ class CommandTestCase(unittest.TestCase):
         A sample command.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS] ARG ARG_NO_HELP
@@ -261,6 +269,8 @@ class CommandTestCase(unittest.TestCase):
         A sample command.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS]
@@ -313,6 +323,8 @@ class CommandTestCase(unittest.TestCase):
         A sample command.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS]
@@ -341,6 +353,44 @@ class CommandTestCase(unittest.TestCase):
         output = list(ext._format_command(ctx, nested='short'))
 
         self.assertEqual('', '\n'.join(output))
+
+    def test_hide_description(self):
+        """Validate that hide_description flag hides the command description."""
+
+        @click.command()
+        @click.option('--param', help='A sample option')
+        def foobar():
+            """A sample command with a description."""
+            pass
+
+        ctx = click.Context(foobar, info_name='foobar')
+        output = list(ext._format_command(ctx, nested='short', hide_description=True))
+
+        # The output should NOT contain the description
+        self.assertEqual(
+            textwrap.dedent(
+                """
+        .. program:: foobar
+        .. rubric:: Usage
+
+        .. code-block:: shell
+
+            foobar [OPTIONS]
+
+        .. rubric:: Options
+
+        .. option:: --param <param>
+
+            A sample option
+        """
+            ).lstrip(),
+            '\n'.join(output),
+        )
+
+        # Verify that without the flag, the description IS present
+        output_with_desc = list(ext._format_command(ctx, nested='short', hide_description=False))
+        output_str = '\n'.join(output_with_desc)
+        self.assertIn('A sample command with a description.', output_str)
 
     def test_titles(self):
         """Validate a `click.Command` with nested titles."""
@@ -374,6 +424,8 @@ class CommandTestCase(unittest.TestCase):
             my_cli hello --name "Jack"
 
         .. program:: hello
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             hello [OPTIONS]
@@ -428,6 +480,8 @@ class CommandTestCase(unittest.TestCase):
         dash of bold and even some underlined words.
 
         .. program:: foobar
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             foobar [OPTIONS]
@@ -495,6 +549,8 @@ class CommandTestCase(unittest.TestCase):
         :param click.core.Context ctx: Click context.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS]
@@ -564,6 +620,8 @@ that will be rewrapped again.
         that will be rewrapped again.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS]
@@ -621,6 +679,8 @@ class GroupTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -652,6 +712,8 @@ class GroupTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] ARG COMMAND [ARGS]...
@@ -724,6 +786,8 @@ class NestedCommandsTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -753,6 +817,8 @@ class NestedCommandsTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -776,6 +842,8 @@ class NestedCommandsTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -818,6 +886,8 @@ class CommandFilterTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -840,6 +910,8 @@ class CommandFilterTestCase(unittest.TestCase):
         A sample command group.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -902,6 +974,8 @@ class CustomMultiCommandTestCase(unittest.TestCase):
         A sample custom multicommand.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -960,6 +1034,8 @@ class CustomMultiCommandTestCase(unittest.TestCase):
         A sample custom multicommand.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -1017,6 +1093,8 @@ class CommandCollectionTestCase(unittest.TestCase):
         A simple CommandCollection.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -1033,6 +1111,8 @@ class CommandCollectionTestCase(unittest.TestCase):
         A simple CommandCollection.
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS] COMMAND [ARGS]...
@@ -1083,6 +1163,8 @@ class AutoEnvvarPrefixTestCase(unittest.TestCase):
         A simple CLI with auto-env vars .
 
         .. program:: cli
+        .. rubric:: Usage
+
         .. code-block:: shell
 
             cli [OPTIONS]

@@ -65,3 +65,6 @@ ChangeLog
 
 # Intellij
 .idea
+
+# VSCode
+.vscode
