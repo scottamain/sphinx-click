@@ -208,6 +208,9 @@ def _format_options(ctx: click.Context) -> ty.Generator[str, None, None]:
         if isinstance(param, click.core.Option) and not getattr(param, 'hidden', False)
     ]
 
+    # Sort options alphabetically by their primary option name
+    params = sorted(params, key=lambda p: p.opts[0] if p.opts else '')
+
     for param in params:
         for line in _format_option(ctx, param):
             yield line

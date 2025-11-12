@@ -89,10 +89,6 @@ class CommandTestCase(unittest.TestCase):
 
         .. rubric:: Options
 
-        .. option:: --param <param>
-
-            A sample option
-
         .. option:: --another <FOO>
 
             Another option
@@ -103,15 +99,19 @@ class CommandTestCase(unittest.TestCase):
 
             :options: Option1 | Option2
 
+        .. option:: --flag
+
+            A boolean flag
+
         .. option:: --numeric-choice <choice>
 
             A sample option with numeric choices
 
             :options: 1 | 2 | 3
 
-        .. option:: --flag
+        .. option:: --param <param>
 
-            A boolean flag
+            A sample option
 
         .. rubric:: Arguments
 
@@ -277,29 +277,29 @@ class CommandTestCase(unittest.TestCase):
 
         .. rubric:: Options
 
-        .. option:: --num-param <num_param>
+        .. option:: --empty-string-default <empty_string_default>
 
-            :default: ``42``
-
-        .. option:: --param <param>
-
-            :default: ``'Something computed at runtime'``
+            :default: ``''``
 
         .. option:: --group <group>
 
             :default: ``('foo', 'bar')``
 
+        .. option:: --num-param <num_param>
+
+            :default: ``42``
+
         .. option:: --only-show-default <only_show_default>
 
             :default: ``'Some default computed at runtime!'``
 
+        .. option:: --param <param>
+
+            :default: ``'Something computed at runtime'``
+
         .. option:: --string-default <string_default>
 
             :default: ``'abc'``
-
-        .. option:: --empty-string-default <empty_string_default>
-
-            :default: ``''``
         """
             ).lstrip(),
             '\n'.join(output),
@@ -488,15 +488,15 @@ class CommandTestCase(unittest.TestCase):
 
         .. rubric:: Options
 
-        .. option:: --name <name>
-
-            **Required** Name to say hello to.
-
         .. option:: --choice <choice>
 
             A sample option with choices
 
             :options: Option1 | Option2
+
+        .. option:: --name <name>
+
+            **Required** Name to say hello to.
 
         .. option:: --param <param>
 
@@ -1171,13 +1171,13 @@ class AutoEnvvarPrefixTestCase(unittest.TestCase):
 
         .. rubric:: Options
 
-        .. option:: --param <param>
-
-            Help for param
-
         .. option:: --other-param <other_param>
 
             Help for other-param
+
+        .. option:: --param <param>
+
+            Help for param
 
         .. option:: --param-with-explicit-envvar <param_with_explicit_envvar>
 
