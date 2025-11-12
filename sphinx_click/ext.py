@@ -208,6 +208,11 @@ def _format_options(ctx: click.Context) -> ty.Generator[str, None, None]:
         if isinstance(param, click.core.Option) and not getattr(param, 'hidden', False)
     ]
 
+    # Sort options based on the options-order setting (default: alphabetical)
+    options_order_setting = ctx.meta.get('sphinx-click-options-order', 'alphabetical')
+    if options_order_setting == 'alphabetical':
+        params = sorted(params, key=lambda p: p.opts[0] if p.opts else '')
+
     for param in params:
         for line in _format_option(ctx, param):
             yield line
@@ -437,6 +442,22 @@ def nested(argument: ty.Optional[str]) -> NestedT:
     return ty.cast(NestedT, argument)
 
 
+def options_order(argument: ty.Optional[str]) -> str:
+    """Validate the options-order directive option."""
+    values = ('alphabetical', 'bysource')
+
+    if argument is None:
+        return 'alphabetical'  # default value
+
+    if argument not in values:
+        raise ValueError(
+            "%s is not a valid value for ':options-order:'; allowed values: %s"
+            % (argument, directives.format_values(values))
+        )
+
+    return argument
+
+
 class ClickDirective(rst.Directive):
     has_content = False
     required_arguments = 1
@@ -446,6 +467,7 @@ class ClickDirective(rst.Directive):
         'commands': directives.unchanged,
         'show-nested': directives.flag,
         'hide-description': directives.flag,
+        'options-order': options_order,
     }
 
     def _load_module(self, module_path: str) -> ty.Union[click.Command, click.Group]:
@@ -495,6 +517,7 @@ class ClickDirective(rst.Directive):
         commands: ty.Optional[ty.List[str]] = None,
         semantic_group: bool = False,
         hide_description: bool = False,
+        options_order: str = 'alphabetical',
     ) -> ty.List[nodes.section]:
         """Generate the relevant Sphinx nodes.
 
@@ -509,6 +532,7 @@ class ClickDirective(rst.Directive):
         :param semantic_group: Display command as title and description for
             `click.CommandCollection`.
         :param hide_description: Hide the command description if True.
+        :param options_order: Order of options display ('alphabetical' or 'bysource')
         :returns: A list of nested docutil nodes
         """
         ctx = click.Context(command, info_name=name, parent=parent)
@@ -530,6 +554,7 @@ class ClickDirective(rst.Directive):
         result = statemachine.StringList()
 
         ctx.meta["sphinx-click-env"] = self.env
+        ctx.meta["sphinx-click-options-order"] = options_order
         if semantic_group:
             lines = _format_description(ctx)
         else:
@@ -554,6 +579,7 @@ class ClickDirective(rst.Directive):
                             nested=nested,
                             semantic_group=True,
                             hide_description=hide_description,
+                            options_order=options_order,
                         )
                     )
             else:
@@ -567,6 +593,7 @@ class ClickDirective(rst.Directive):
                             parent=parent,
                             nested=nested,
                             hide_description=hide_description,
+                            options_order=options_order,
                         )
                     )
 
@@ -604,7 +631,13 @@ class ClickDirective(rst.Directive):
 
         hide_description = 'hide-description' in self.options
 
-        return self._generate_nodes(prog_name, command, None, nested, commands, hide_description=hide_description)
+        # Get options-order setting (default: alphabetical)
+        options_order = self.options.get('options-order', 'alphabetical')
+
+        return self._generate_nodes(
+            prog_name, command, None, nested, commands,
+            hide_description=hide_description, options_order=options_order
+        )
 
 
 def setup(app: application.Sphinx) -> ty.Dict[str, ty.Any]:

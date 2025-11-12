@@ -53,6 +53,18 @@ Once enabled, *sphinx-click* enables automatic documentation for
    ``:commands:``
      Document only listed commands.
 
+   ``:options-order:``
+     How options should be ordered in the documentation. One of:
+
+     ``alphabetical``
+       Sort options alphabetically by their option names (using the first name
+       if there are multiple option names).
+
+     ``bysource``
+       Keep options in the same order as they appear in the source code.
+
+     Defaults to ``alphabetical``.
+
    ``:show-nested:``
      This option is deprecated; use ``nested`` instead.
 
