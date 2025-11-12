@@ -1209,3 +1209,145 @@ class AutoEnvvarPrefixTestCase(unittest.TestCase):
             ).lstrip(),
             '\n'.join(output),
         )
+
+
+class OptionsOrderTestCase(unittest.TestCase):
+    """Validate options-order functionality."""
+
+    maxDiff = None
+
+    def test_options_order_alphabetical(self):
+        """Validate that options are sorted alphabetically by default."""
+
+        @click.command()
+        @click.option('--zebra', help='Last alphabetically')
+        @click.option('--alpha', help='First alphabetically')
+        @click.option('--middle', help='Middle alphabetically')
+        def foobar():
+            """A sample command."""
+            pass
+
+        ctx = click.Context(foobar, info_name='foobar')
+        ctx.meta['sphinx-click-options-order'] = 'alphabetical'
+        output = list(ext._format_command(ctx, nested='short'))
+
+        self.assertEqual(
+            textwrap.dedent(
+                """
+        A sample command.
+
+        .. program:: foobar
+        .. rubric:: Usage
+
+        .. code-block:: shell
+
+            foobar [OPTIONS]
+
+        .. rubric:: Options
+
+        .. option:: --alpha <alpha>
+
+            First alphabetically
+
+        .. option:: --middle <middle>
+
+            Middle alphabetically
+
+        .. option:: --zebra <zebra>
+
+            Last alphabetically
+        """
+            ).lstrip(),
+            '\n'.join(output),
+        )
+
+    def test_options_order_bysource(self):
+        """Validate that options maintain source order with bysource."""
+
+        @click.command()
+        @click.option('--zebra', help='Last alphabetically')
+        @click.option('--alpha', help='First alphabetically')
+        @click.option('--middle', help='Middle alphabetically')
+        def foobar():
+            """A sample command."""
+            pass
+
+        ctx = click.Context(foobar, info_name='foobar')
+        ctx.meta['sphinx-click-options-order'] = 'bysource'
+        output = list(ext._format_command(ctx, nested='short'))
+
+        self.assertEqual(
+            textwrap.dedent(
+                """
+        A sample command.
+
+        .. program:: foobar
+        .. rubric:: Usage
+
+        .. code-block:: shell
+
+            foobar [OPTIONS]
+
+        .. rubric:: Options
+
+        .. option:: --zebra <zebra>
+
+            Last alphabetically
+
+        .. option:: --alpha <alpha>
+
+            First alphabetically
+
+        .. option:: --middle <middle>
+
+            Middle alphabetically
+        """
+            ).lstrip(),
+            '\n'.join(output),
+        )
+
+    def test_options_order_default_is_alphabetical(self):
+        """Validate that the default is alphabetical ordering."""
+
+        @click.command()
+        @click.option('--charlie', help='C option')
+        @click.option('--bravo', help='B option')
+        @click.option('--alpha', help='A option')
+        def foobar():
+            """A sample command."""
+            pass
+
+        ctx = click.Context(foobar, info_name='foobar')
+        # Don't set sphinx-click-options-order, should default to alphabetical
+        output = list(ext._format_command(ctx, nested='short'))
+
+        self.assertEqual(
+            textwrap.dedent(
+                """
+        A sample command.
+
+        .. program:: foobar
+        .. rubric:: Usage
+
+        .. code-block:: shell
+
+            foobar [OPTIONS]
+
+        .. rubric:: Options
+
+        .. option:: --alpha <alpha>
+
+            A option
+
+        .. option:: --bravo <bravo>
+
+            B option
+
+        .. option:: --charlie <charlie>
+
+            C option
+        """
+            ).lstrip(),
+            '\n'.join(output),
+        )
+
